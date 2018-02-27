@@ -3,11 +3,14 @@
 set -e
 
 filename=$(basename $1)
+printer=pool-sw1
+printpath="~/.print"
 
-echo 'Copy file to destination'
-scp $1 atis:~/print/$filename
+echo 'Check or create print folder'
+ssh atis "mkdir -p ${printpath}"
 
-echo 'Queue print job'
-ssh atis "lpr -P pool-sw1 print/${filename}"
+scp "$1" atis:$printpath/$filename
+echo 'Finished file transfer'
 
-echo 'Finished printing'
+ssh atis "lpr -P ${printer} ${printpath}/${filename}"
+echo "Queued print job on ${printer}"
